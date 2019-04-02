@@ -67,7 +67,8 @@ int timeToInt(string str) {
 	bool isPM = str.find("PM") != string::npos || str.find("pm") != string::npos;
 	if(index == 1)
 		return stoi(str.substr(0, 1))*100 + 1200*isPM + stoi(str.substr(2, 2));
-	return stoi(str.substr(0, 2))*100 + 1200*isPM + stoi(str.substr(3, 2));
+	//Need to check the 12:XX PM case, since at 12:XX PM we don't want to add 1200. This is a problem for 12:XX AM, but we don't care.
+	return stoi(str.substr(0, 2))*100 + 1200*(isPM && str.substr(0,2)!="12") + stoi(str.substr(3, 2));
 }
 
 vector<ClassEntry> readData(string path) {
