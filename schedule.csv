@@ -1,0 +1,56 @@
+Subject-Number,Course Title,Credits,Start Time,End Time,Days
+ECE-211,Technical Writing for ECE,1,1:30 PM,2:20 PM,M
+ECE-211,Technical Writing for ECE,1,1:30 PM,2:20 PM,W
+ECE-211,Technical Writing for ECE,1,2:30 PM,3:20 PM,W
+ECE-221,Digital Logic Design,3,9:00 AM,9:50 AM,MWF
+ECE-221,Digital Logic Design,3,10:30 AM,11:20 AM,MWF
+ECE-221L,Digital Logic Design Lab,0,8:50 AM,11:20 AM,T
+ECE-221L,Digital Logic Design Lab,0,2:50 PM,5:20 PM,M
+ECE-221L,Digital Logic Design Lab,0,8:50 AM,11:20 AM,R
+ECE-221L,Digital Logic Design Lab,0,2:50 PM,5:20 PM,R
+ECE-251,Engineering Programming I,3,12:00 PM,1:15 PM,TR
+ECE-251,Engineering Programming I,3,1:30 PM,2:45 PM,TR
+ECE-263,Linear Circuit Theory I,4,11:30 AM,12:20 PM,MWF
+ECE-263,Linear Circuit Theory I,4,12:30 PM,1:20 PM,MWF
+ECE-263L,Linear Circuit Theory I Lab,0,8:50 AM,11:20 AM,T
+ECE-263L,Linear Circuit Theory I Lab,0,2:50 PM,5:20 PM,T
+ECE-263L,Linear Circuit Theory I Lab,0,2:50 PM,5:20 PM,R
+ECE-281,Fundamentals of Elec Engr,2.5,10:30 AM,11:20 AM,MWF
+ECE-281,Fundamentals of Elec Engr,2.5,1:30 PM,2:20 PM,MWF
+ECE-322,Embedded Microcontrollers,3,11:30 AM,12:20 PM,MWF
+ECE-322,Embedded Microcontrollers,3,12:30 PM,1:20 PM,MWF
+ECE-322L,Embedded Microcontrollers Lab,0,8:50 AM,11:20 AM,R
+ECE-322L,Embedded Microcontrollers Lab,0,11:50 AM,2:20 PM,R
+ECE-322L,Embedded Microcontrollers Lab,0,2:50 PM,5:20 PM,R
+ECE-340,Electronics I,3,8:00 AM,8:50 AM,MWF
+ECE-340,Electronics I,3,9:00 AM,9:50 AM,MWF
+ECE-340,Electronics I,3,,,
+ECE-340L,Electronics I Lab,0,8:50 AM,11:20 AM,R
+ECE-340L,Electronics I Lab,0,11:50 AM,2:20 PM,R
+ECE-340L,Electronics I Lab,0,2:50 PM,5:20 PM,R
+ECE-340L,Electronics I Lab,0,,,
+ECE-360,Signals and Systems,3,8:00 AM,8:50 AM,MWF
+ECE-360,Signals and Systems,3,9:00 AM,9:50 AM,MWF
+ECE-360,Signals and Systems,3,,,
+ECE-424,Computer Architecture,3,10:30 AM,11:20 AM,MWF
+ECE-430,Electromagnetic Field Theory,3,12:30 PM,1:20 PM,MWF
+ECE-430,Electromagnetic Field Theory,3,1:30 PM,2:20 PM,MWF
+ECE-450,Data Communication Systems,3,11:30 AM,12:20 PM,MWF
+GE-100,Fundamentals of Engineering,1,8:00 AM,8:50 AM,M
+GE-100,Fundamentals of Engineering,1,9:00 AM,9:50 AM,M
+GE-100L,Fundamentals of Engineering Lab,1,8:30 AM,9:45 AM,TR
+GE-100L,Fundamentals of Engineering Lab,1,10:30 AM,11:45 AM,TR
+GE-100L,Fundamentals of Engineering Lab,1,12:00 PM,1:15 PM,TR
+GE-100L,Fundamentals of Engineering Lab,1,1:30 PM,2:45 PM,TR
+GE-100L,Fundamentals of Engineering Lab,1,3:00 PM,4:15 PM,TR
+GE-100L,Fundamentals of Engineering Lab,1,4:30 PM,5:45 PM,TR
+GE-100L,Fundamentals of Engineering Lab,1,6:30 PM,7:45 PM,TR
+GE-311,Financial Decisions in Eng,1.5,1:30 PM,2:20 PM,MWF
+GE-311,Financial Decisions in Eng,1.5,2:30 PM,3:20 PM,MWF
+GE-312,Ethical Decisions in Engineer,1.5,1:30 PM,2:20 PM,MWF
+GE-312,Ethical Decisions in Engineer,1.5,2:30 PM,3:20 PM,MWF
+GE-493,Profssnl Com & Intrprsnl Relat,3,5:30 PM,9:30 PM,T
+GE-497,Senior Design Project I,3,10:35 AM,12:25 PM,TR
+GE-497,Senior Design Project I,3,10:35 AM,12:25 PM,TR
+GE-497,Senior Design Project I,3,12:55 PM,2:45 PM,TR
+GE-497,Senior Design Project I,3,12:55 PM,2:45 PM,TR
