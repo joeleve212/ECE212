@@ -33,7 +33,7 @@ struct ClassEntry {
 	
 	//Returns a string representation of the class - W.I.P.
 	string toString() {
-		string str = to_string(numCredits);
+		std::string str = std::to_string(numCredits);
 		//Erases everything from 1 right of the first non-matching character ('0' in this case) to the end (npos)
 		//This will get rid of all the extra zeros. Side effect: if an integral number x is used, get "x.", not "x.0"
 		str = str.erase(str.find_last_not_of('0') + 1, string::npos);
