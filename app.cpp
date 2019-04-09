@@ -143,6 +143,7 @@ vector<string> readColumn(string path, int col) {
 		}
 		data.push_back(value);
 	}
+	file.close();
 	return data;
 }
 
