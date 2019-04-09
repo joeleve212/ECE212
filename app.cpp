@@ -46,8 +46,11 @@ struct ClassEntry {
 	}
 };
 
-//Read in the data from the path and return a vector of ClassEntry's holding the data
+//Function Prototypes
 vector<ClassEntry> readData(string path);
+vector<string> readColumn(string path, string columnName);
+vector<string> readColumn(string path, int col);
+
 void cmdInput(vector<ClassEntry> classes){
 	string required[10];
 	int i, totalReq;
@@ -91,12 +94,13 @@ int main() {
 	for(int i = 0; i < classes.size(); i++) {
 		cout << classes[i].toString() << endl;
 	}
+	
 	//
 	cmdInput(classes);
 
 	vector< vector <int> > reqSections; //This 2D vector will hold the times for each section(row) of each class(column)
 	for(vector<int> row in reqSections){
-		//find one pair of times in row one that doesn't conflict with one pair in row 2 & 3
+		//find one pair of times in row one that doesn't conflict with one pair in row 2 & 3*/
 		for(int startTimeIndex = 0; startTimeIndex <totRows; startTimeIndex += 2){
 			if(row(startTimeIndex)>/*Next row start time*/ && ){
 				//
@@ -106,8 +110,6 @@ int main() {
 	
 	return 0;
 }
-
-
 
 //Convert a time to an int. Time passed in should be of the form "12:30 AM", "2:45 PM" etc.
 int timeToInt(string str) {
@@ -121,6 +123,51 @@ int timeToInt(string str) {
 	return stoi(str.substr(0, 2))*100 + 1200*(isPM && str.substr(0,2)!="12") + stoi(str.substr(3, 2));
 }
 
+//Read a specific column from a CSV file. First column is column 0.
+vector<string> readColumn(string path, int col) {
+	vector<string> data;
+	ifstream file;
+	file.open(path);
+	string line;
+	if(!file.is_open())
+		return data;
+	//Skip first line (names of columns) by calling getline()
+	getline(file, line);
+	while(getline(file, line)) {
+		stringstream ss(line);
+		string value;
+		int count = 0;
+		//Go until the correct value is found
+		while(getline(ss, value, ',') && count != col) {
+			count++;
+		}
+		data.push_back(value);
+	}
+	return data;
+}
+
+//Overload of above method. Takes a column name and returns that column. Is case sensitive.
+vector<string> readColumn(string path, string columnName) {
+	ifstream file;
+	file.open(path);
+	string line;
+	getline(file, line);
+	int containsAt = line.find(columnName);
+	//If the columnName isn't found, just return the first column (can't return nothing)
+	if(containsAt == string::npos)
+		return readColumn(path, 0);
+	int col = 0;
+	for(int i = 0; i < line.length(); i++) {
+		if(line[i] == ',')
+			col++;
+		if(i >= containsAt)
+			break;
+	}
+	file.close();
+	return readColumn(path, col);
+}
+
+//Read in the data from the path and return a vector of ClassEntry's holding the data
 vector<ClassEntry> readData(string path) {
 	//Container for all the classes
 	vector<ClassEntry> classes;
