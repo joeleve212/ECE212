@@ -88,11 +88,34 @@ void cmdInput(vector<ClassEntry> classes){
 }
 
 int main() {
+	//All the classes, including the same class at different times.
 	vector<ClassEntry> classes = readData("schedule.csv");
-	cout << "Printing the data for each class" << endl;
+	vector<string> selectedColumn = readColumn("class_Select.csv", "Select");
+	vector<string> allSubjectNumbers = readColumn("class_Select.csv", "Subject-Number");
 	
-	for(int i = 0; i < classes.size(); i++) {
-		cout << classes[i].toString() << endl;
+	
+	//A 2D vector holding all the classes.
+	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
+	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
+	vector<vector<ClassEntry>> selectedClasses;
+	//Populate the selectedClasses vector
+	for(int i = 0; i < selectedColumn.size(); i++) {
+		//If a class that is selected by the user is found, add in all copies of it.
+		if(selectedColumn[i] == "x" || selectedColumn[i] == "X") {
+			vector<ClassEntry> toAdd;
+			for(int j = 0;  j < classes.size(); j++) {
+				if(classes[j].subjectNumber == allSubjectNumbers[i])
+					toAdd.push_back(classes[j]);
+			}
+			selectedClasses.push_back(toAdd);
+		}
+	}
+	
+	//Example of selectedClasses output/manipulation. See declaration of selectedClasses for details.
+	for(int i = 0; i < selectedClasses.size(); i++) {
+		for(int j = 0; j < selectedClasses[i].size(); j++) {
+			cout << selectedClasses[i][j].toString() << endl;
+		}
 	}
 	
 	//
@@ -100,7 +123,7 @@ int main() {
 
 	vector< vector <int> > reqSections; //This 2D vector will hold the times for each section(row) of each class(column)
 	for(vector<int> row in reqSections){
-		//find one pair of times in row one that doesn't conflict with one pair in row 2 & 3*/
+		//find one pair of times in row one that doesn't conflict with one pair in row 2 & 3
 		for(int startTimeIndex = 0; startTimeIndex <totRows; startTimeIndex += 2){
 			if(row(startTimeIndex)>/*Next row start time*/ && ){
 				//
