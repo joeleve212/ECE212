@@ -46,8 +46,11 @@ struct ClassEntry {
 	}
 };
 
-//Read in the data from the path and return a vector of ClassEntry's holding the data
+//Function Prototypes
 vector<ClassEntry> readData(string path);
+vector<string> readColumn(string path, string columnName);
+vector<string> readColumn(string path, int col);
+
 void cmdInput(vector<ClassEntry> classes){
 	string required[10];
 	int i, totalReq;
@@ -85,24 +88,50 @@ void cmdInput(vector<ClassEntry> classes){
 }
 
 int main() {
+	//All the classes, including the same class at different times.
 	vector<ClassEntry> classes = readData("schedule.csv");
-	cout << "Printing the data for each class" << endl;
+	vector<string> selectedColumn = readColumn("class_Select.csv", "Select");
+	vector<string> allSubjectNumbers = readColumn("class_Select.csv", "Subject-Number");
 	
-	for(int i = 0; i < classes.size(); i++) {
-		cout << classes[i].toString() << endl;
-	}
-	//
-	cmdInput(classes);
-
-	vector< vector <int> > reqSections; //This 2D vector will hold the times for each section(row) of each class(column)
-	for(vector<int> row in reqSections){
-		//find one pair of times in row one that doesn't conflict with one pair in row 2 & 3
-		for(int startTimeIndex = 0; startTimeIndex <totRows; startTimeIndex += 2){
-			if(row(startTimeIndex)>/*Next row start time*/ && ){
-				// 
+	
+	//A 2D vector holding all the classes.
+	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
+	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
+	vector<vector<ClassEntry>> selectedClasses;
+	//Populate the selectedClasses vector
+	for(int i = 0; i < selectedColumn.size(); i++) {
+		//If a class that is selected by the user is found, add in all copies of it.
+		if(selectedColumn[i] == "x" || selectedColumn[i] == "X") {
+			vector<ClassEntry> toAdd;
+			for(int j = 0;  j < classes.size(); j++) {
+				if(classes[j].subjectNumber == allSubjectNumbers[i]){
+					toAdd.push_back(classes[j]);
+				}
 			}
+			selectedClasses.push_back(toAdd);
 		}
 	}
+	
+	//Example of selectedClasses output/manipulation. See declaration of selectedClasses for details.
+	for(int i = 0; i < selectedClasses.size(); i++) {
+		for(int j = 0; j < selectedClasses[i].size(); j++) {
+			cout << selectedClasses[i][j].toString() << endl;
+		}
+	}
+	cout << endl << endl << endl;
+	//
+	//																												TODO: check for conflicts,
+	vector<vector<ClassEntry>> possSchedules;
+	for(int sectClass0 = 0; sectClass0 < selectedClasses[0].size(); sectClass0++){ //cycling through sections of class 0
+		//TODO: Check for all conflict cases - any end or start time between the other's start & end && Same day
+		for(int classNum = 1; classNum < selectedClasses.size(); classNum++){// loop through other classes
+			for(int sectNum = 0; sectNum < selectedClasses[classNum].size(); classNum++){//loop through the sections of other classes
+				//
+			}
+			//TODO: Loop through each section of each other class
+		}
+		//if first section of first class conflicts
+	} 
 	
 	return 0;
 }
@@ -119,6 +148,52 @@ int timeToInt(string str) {
 	return stoi(str.substr(0, 2))*100 + 1200*(isPM && str.substr(0,2)!="12") + stoi(str.substr(3, 2));
 }
 
+//Read a specific column from a CSV file. First column is column 0.
+vector<string> readColumn(string path, int col) {
+	vector<string> data;
+	ifstream file;
+	file.open(path);
+	string line;
+	if(!file.is_open())
+		return data;
+	//Skip first line (names of columns) by calling getline()
+	getline(file, line);
+	while(getline(file, line)) {
+		stringstream ss(line);
+		string value;
+		int count = 0;
+		//Go until the correct value is found
+		while(getline(ss, value, ',') && count != col) {
+			count++;
+		}
+		data.push_back(value);
+	}
+	file.close();
+	return data;
+}
+
+//Overload of above method. Takes a column name and returns that column. Is case sensitive.
+vector<string> readColumn(string path, string columnName) {
+	ifstream file;
+	file.open(path);
+	string line;
+	getline(file, line);
+	int containsAt = line.find(columnName);
+	//If the columnName isn't found, just return the first column (can't return nothing)
+	if(containsAt == string::npos)
+		return readColumn(path, 0);
+	int col = 0;
+	for(int i = 0; i < line.length(); i++) {
+		if(line[i] == ',')
+			col++;
+		if(i >= containsAt)
+			break;
+	}
+	file.close();
+	return readColumn(path, col);
+}
+
+//Read in the data from the path and return a vector of ClassEntry's holding the data
 vector<ClassEntry> readData(string path) {
 	//Container for all the classes
 	vector<ClassEntry> classes;
