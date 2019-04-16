@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -46,12 +47,12 @@ struct ClassEntry {
 	}
 };
 
-//Function Prototypes
-vector<ClassEntry> readData(string path);
+//Function Prototypes   -------------unecessary w/ main() at bottom, right?
+/*vector<ClassEntry> readData(string path);
 vector<string> readColumn(string path, string columnName);
 vector<string> readColumn(string path, int col);
 bool isConflict(ClassEntry courseA, ClassEntry courseB);
-
+*/
 void cmdInput(vector<ClassEntry> classes){
 	string required[10];
 	int i, totalReq;
@@ -88,73 +89,28 @@ void cmdInput(vector<ClassEntry> classes){
 	}
 }
 
-int main() {
-	//All the classes, including the same class at different times.
-	vector<ClassEntry> classes = readData("schedule.csv");
-	vector<string> selectedColumn = readColumn("class_Select.csv", "Select");
-	vector<string> allSubjectNumbers = readColumn("class_Select.csv", "Subject-Number");
-	
-	
-	//A 2D vector holding all the classes.
-	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
-	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
-	vector<vector<ClassEntry>> selectedClasses;
-	//Populate the selectedClasses vector
-	for(int i = 0; i < selectedColumn.size(); i++) {
-		//If a class that is selected by the user is found, add in all copies of it.
-		if(selectedColumn[i] == "x" || selectedColumn[i] == "X") {
-			vector<ClassEntry> toAdd;
-			for(int j = 0;  j < classes.size(); j++) {
-				if(classes[j].subjectNumber == allSubjectNumbers[i]){
-					toAdd.push_back(classes[j]);
-				}
-			}
-			selectedClasses.push_back(toAdd);
+bool hasSameDays(string Adays,string Bdays){ //checks if classes are offered on the same day
+	for(int a = 0; Adays.substr(a,1) != ""; a++){ //fill daysA w/ the chars representing each day of class
+		if(Bdays.find(Adays.substr(a,1)) != -1){
+			return true;
 		}
 	}
-	
-	//Example of selectedClasses output/manipulation. See declaration of selectedClasses for details.
-	for(int i = 0; i < selectedClasses.size(); i++) {
-		for(int j = 0; j < selectedClasses[i].size(); j++) {
-			cout << selectedClasses[i][j].toString() << endl;
-		}
-	}
-	cout << endl << endl << endl;
-	//
-	//																												TODO: check for conflicts, build possSchedules
-	vector<vector<ClassEntry>> possSchedules;
-	
-	for(int classNum = 0; classNum < selectedClasses.size()-1; classNum++){// loop through each class
-		vector<ClassEntry> newSched;
-		
-		for(int sectNum = 0; sectNum < selectedClasses[classNum].size(); classNum++){//loop through the sections of each class
-			if(selectedClasses[classNum+1][sectNum].endTime != (int)NULL && !isConflict(selectedClasses[classNum][sectNum], selectedClasses[classNum+1][sectNum])){
-				newSched.push_back(selectedClasses[classNum][sectNum]);
-			}
-			/*else if(){//case for NULL
-				//
-			}
-			else if(){//case for conflict
-				//
-			}
-				*/
-			//TODO: Check for all conflict cases - any end or start time between the other's start & end && Same day
-		}
-	}
-	string tester = "quick brown fox";
-	cout << tester.find("fox");
-	return 0;
+	return false;
 }
 
 bool isConflict(ClassEntry courseA, ClassEntry courseB){
-	//if(courseA.days /* HAS ANY DAYS IN COMMON W/ B*/){//check if courses run on any of the same days
+	
+	string Adays = courseA.days;
+	string Bdays = courseB.days;
+	
+	if(hasSameDays(Adays, Bdays)){//TODO: check if courses run on any of the same days
 		if(courseA.startTime < courseB.endTime && courseA.startTime > courseB.startTime){ //check if courseA starts during courseB
 			return true;
 		}
 		else if(courseA.endTime < courseB.endTime && courseA.endTime > courseB.startTime){ //check if courseA ends during courseB
 			return true;
 		}
-	//}
+	}
 	return false;
 }
 
@@ -251,3 +207,68 @@ vector<ClassEntry> readData(string path) {
 	file.close();
 	return classes;
 }
+
+bool checkSched(vector<ClassEntry> checkThis){//takes a combination of class sections, returns if it is valid
+	//TODO: use isConflict a lot to check if there are any conflicts TODO: TEST THIS
+	for(int a = 0; a<checkThis.size();a++){
+		for(int b = a+1; b<checkThis.size();b++){
+			if(isConflict(checkThis[a], checkThis[b])){return false;}
+		}
+	}
+	return true;
+}
+
+int main() {
+	//All the classes, including the same class at different times.
+	vector<ClassEntry> classes = readData("schedule.csv");
+	vector<string> selectedColumn = readColumn("class_Select.csv", "Select");
+	vector<string> allSubjectNumbers = readColumn("class_Select.csv", "Subject-Number");
+	
+	
+	//A 2D vector holding all the classes.
+	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
+	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
+	vector<vector<ClassEntry>> selectedClasses;
+	//Populate the selectedClasses vector
+	for(int i = 0; i < selectedColumn.size(); i++) {
+		//If a class that is selected by the user is found, add in all copies of it.
+		if(selectedColumn[i] == "x" || selectedColumn[i] == "X") {
+			vector<ClassEntry> toAdd;
+			for(int j = 0;  j < classes.size(); j++) {
+				if(classes[j].subjectNumber == allSubjectNumbers[i]){
+					toAdd.push_back(classes[j]);
+				}
+			}
+			//if(selectedClasses[0] == selectedClasses[1]){		//added these checks to order classes by increasing number of sections
+				selectedClasses.push_back(toAdd);
+			/*}
+			else if(toAdd.size()>selectedClasses[0].size()){    //TODO: make this work for better efficiency
+				selectedClasses.push_back(toAdd);
+			}
+			else {
+				selectedClasses.insert(1, toAdd);
+			}*/
+		}
+	}
+	
+	//Example of selectedClasses output/manipulation. See declaration of selectedClasses for details.
+	/*for(int i = 0; i < selectedClasses.size(); i++) {
+		for(int j = 0; j < selectedClasses[i].size(); j++) {
+			cout << selectedClasses[i][j].toString() << endl;
+		}
+	}*/
+	cout << endl << endl << endl;
+	//
+	//																												TODO: check for conflicts, build possSchedules
+	vector<vector<ClassEntry>> possSchedules;
+	vector<ClassEntry> newSched;
+	for(int i = 0; i < selectedClasses.size(); i++){
+		for(int classA = 0; classA < selectedClasses.size()-1; classA++){// TODO:produce all the combinations of classes possible
+			
+		}
+	}
+	cout << "program ran fully" << endl;
+	return 0;
+}
+
+
