@@ -50,6 +50,7 @@ struct ClassEntry {
 vector<ClassEntry> readData(string path);
 vector<string> readColumn(string path, string columnName);
 vector<string> readColumn(string path, int col);
+bool isConflict(ClassEntry courseA, ClassEntry courseB);
 
 void cmdInput(vector<ClassEntry> classes){
 	string required[10];
@@ -70,7 +71,7 @@ void cmdInput(vector<ClassEntry> classes){
 	for(int j = 0; j<totalReq;j++){ //loop through required classes
 		classExists = false;
 		for(int k = 0; k<classes.size();k++){ //loop through offered classes
-			//TODO:Check that class number aligns with a class
+			//Check that class number aligns with a class
 			if(required[j]==classes[k].subjectNumber){
 				//print class name if yes
 				classExists=true;
@@ -120,20 +121,41 @@ int main() {
 	}
 	cout << endl << endl << endl;
 	//
-	//																												TODO: check for conflicts,
+	//																												TODO: check for conflicts, build possSchedules
 	vector<vector<ClassEntry>> possSchedules;
-	for(int sectClass0 = 0; sectClass0 < selectedClasses[0].size(); sectClass0++){ //cycling through sections of class 0
-		//TODO: Check for all conflict cases - any end or start time between the other's start & end && Same day
-		for(int classNum = 1; classNum < selectedClasses.size(); classNum++){// loop through other classes
-			for(int sectNum = 0; sectNum < selectedClasses[classNum].size(); classNum++){//loop through the sections of other classes
+	
+	for(int classNum = 0; classNum < selectedClasses.size()-1; classNum++){// loop through each class
+		vector<ClassEntry> newSched;
+		
+		for(int sectNum = 0; sectNum < selectedClasses[classNum].size(); classNum++){//loop through the sections of each class
+			if(selectedClasses[classNum+1][sectNum].endTime != (int)NULL && !isConflict(selectedClasses[classNum][sectNum], selectedClasses[classNum+1][sectNum])){
+				newSched.push_back(selectedClasses[classNum][sectNum]);
+			}
+			/*else if(){//case for NULL
 				//
 			}
-			//TODO: Loop through each section of each other class
+			else if(){//case for conflict
+				//
+			}
+				*/
+			//TODO: Check for all conflict cases - any end or start time between the other's start & end && Same day
 		}
-		//if first section of first class conflicts
-	} 
-	
+	}
+	string tester = "quick brown fox";
+	cout << tester.find("fox");
 	return 0;
+}
+
+bool isConflict(ClassEntry courseA, ClassEntry courseB){
+	//if(courseA.days /* HAS ANY DAYS IN COMMON W/ B*/){//check if courses run on any of the same days
+		if(courseA.startTime < courseB.endTime && courseA.startTime > courseB.startTime){ //check if courseA starts during courseB
+			return true;
+		}
+		else if(courseA.endTime < courseB.endTime && courseA.endTime > courseB.startTime){ //check if courseA ends during courseB
+			return true;
+		}
+	//}
+	return false;
 }
 
 //Convert a time to an int. Time passed in should be of the form "12:30 AM", "2:45 PM" etc.
