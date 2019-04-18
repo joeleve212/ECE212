@@ -218,6 +218,10 @@ bool checkSched(vector<ClassEntry> checkThis){//takes a combination of class sec
 	return true;
 }
 
+fillWithSections(i, allCombos, selectedClasses){
+	//
+}
+
 int main() {
 	//All the classes, including the same class at different times.
 	vector<ClassEntry> classes = readData("schedule.csv");
@@ -260,10 +264,10 @@ int main() {
 	cout << endl << endl << endl;
 	//
 	//																												TODO: check for conflicts, build possSchedules
-	vector<vector<ClassEntry>> possSchedules;
+	vector<vector<ClassEntry>> possSchedules;  //outgoing schedule 
 	vector<ClassEntry> newSched;
 	int totalCombos = 1;
-	for(int i = 0; i < selectedClasses.size(); i++){
+	for(int i = 0; i < selectedClasses.size(); i++){ //
 		totalCombos *= selectedClasses[i].size();
 	}
 	vector<int> allCombos;
