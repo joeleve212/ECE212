@@ -262,10 +262,13 @@ int main() {
 	//																												TODO: check for conflicts, build possSchedules
 	vector<vector<ClassEntry>> possSchedules;
 	vector<ClassEntry> newSched;
+	int totalCombos = 1;
 	for(int i = 0; i < selectedClasses.size(); i++){
-		for(int classA = 0; classA < selectedClasses.size()-1; classA++){// TODO:produce all the combinations of classes possible
-			
-		}
+		totalCombos *= selectedClasses[i].size();
+	}
+	vector<int> allCombos;
+	for(int i = 0; i < selectedClasses.size(); i++){
+		allCombos = fillWithSections(i, allCombos, selectedClasses);					//TODO: create fillWithSections() to create list of all class combos
 	}
 	cout << "program ran fully" << endl;
 	return 0;
