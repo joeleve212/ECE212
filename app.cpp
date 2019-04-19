@@ -47,12 +47,6 @@ struct ClassEntry {
 	}
 };
 
-//Function Prototypes   -------------unecessary w/ main() at bottom, right?
-/*vector<ClassEntry> readData(string path);
-vector<string> readColumn(string path, string columnName);
-vector<string> readColumn(string path, int col);
-bool isConflict(ClassEntry courseA, ClassEntry courseB);
-*/
 void cmdInput(vector<ClassEntry> classes){
 	string required[10];
 	int i, totalReq;
@@ -218,14 +212,41 @@ bool checkSched(vector<ClassEntry> checkThis){//takes a combination of class sec
 	return true;
 }
 
+//Helper function for findSchedules()
+void findSchedulesHelper(vector<vector<ClassEntry>> selectedClasses, int col, vector<ClassEntry> build, vector<vector<ClassEntry>> &out) {
+	//The base case, when a schedule has been generated
+	if(col == selectedClasses.size())
+		return;
+	//Go through all the sections for this class
+	for(int row = 0; row < selectedClasses[col].size(); row++) {
+		build.push_back(selectedClasses[col][row]);
+		//Check if we're on the last column (which would be the end of any given schedule)
+		if(col == selectedClasses.size()-1) {
+			//Append the schedule to the output
+			out.push_back(build);
+		}
+		//Move to the next class (or column in this case)
+		findSchedulesHelper(selectedClasses, col + 1, build, out);
+		//Remove the last element to be replaced by the next iteration of this for loop
+		build.pop_back();
+	}
+}
+
+//Find all possible schedules from a 2D array of classes formated like arr[class][section]
+void findSchedules(vector<vector<ClassEntry>> selectedClasses, vector<vector<ClassEntry>> &out) {
+	vector<ClassEntry> emptyBuild;
+	findSchedulesHelper(selectedClasses, 0, emptyBuild, out);
+}
+
 int main() {
+	
 	//All the classes, including the same class at different times.
 	vector<ClassEntry> classes = readData("schedule.csv");
 	vector<string> selectedColumn = readColumn("class_Select.csv", "Select");
 	vector<string> allSubjectNumbers = readColumn("class_Select.csv", "Subject-Number");
 	
 	
-	//A 2D vector holding all the classes.
+	//A 2D vector holding all the classes, including all the sections, that the user selected in class_Select.csv
 	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
 	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
 	vector<vector<ClassEntry>> selectedClasses;
@@ -251,26 +272,22 @@ int main() {
 		}
 	}
 	
-	//Example of selectedClasses output/manipulation. See declaration of selectedClasses for details.
-	/*for(int i = 0; i < selectedClasses.size(); i++) {
-		for(int j = 0; j < selectedClasses[i].size(); j++) {
-			cout << selectedClasses[i][j].toString() << endl;
-		}
-	}*/
 	cout << endl << endl << endl;
-	//
-	//																												TODO: check for conflicts, build possSchedules
+	
+	//All the possible schedules, including ones that have conflicts. 
+	//TODO: Filter out the conflicts
 	vector<vector<ClassEntry>> possSchedules;
-	vector<ClassEntry> newSched;
-	int totalCombos = 1;
-	for(int i = 0; i < selectedClasses.size(); i++){
-		totalCombos *= selectedClasses[i].size();
+	findSchedules(selectedClasses, possSchedules);
+	int count = 0;
+	for(int i = 0; i < possSchedules.size(); i++) {
+		cout << "Printing a schedule" << endl << endl;
+		for(int j = 0; j < possSchedules[i].size(); j++) {
+			cout << possSchedules[i][j].toString() << endl;
+		}
+		count++;
 	}
-	vector<int> allCombos;
-	for(int i = 0; i < selectedClasses.size(); i++){
-		allCombos = fillWithSections(i, allCombos, selectedClasses);					//TODO: create fillWithSections() to create list of all class combos
-	}
-	cout << "program ran fully" << endl;
+	cout << endl;
+	cout << "Num schedules generated: " << count << endl;
 	return 0;
 }
 
