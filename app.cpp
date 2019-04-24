@@ -86,13 +86,14 @@ void cmdInput(vector<ClassEntry> classes){
 bool hasSameDays(string Adays,string Bdays){ //checks if classes are offered on the same day
 	for(int a = 0; Adays.substr(a,1) != ""; a++){ //fill daysA w/ the chars representing each day of class
 		if(Bdays.find(Adays.substr(a,1)) != -1){
+			cout << Adays.substr(a,1) << " " << Bdays.substr(a,1) << endl;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool isConflict(ClassEntry courseA, ClassEntry courseB){
+bool isConflict(ClassEntry courseA, ClassEntry courseB){// ISSUE: ALWAYS RETURNING FALSE
 	
 	string Adays = courseA.days;
 	string Bdays = courseB.days;
@@ -260,15 +261,7 @@ int main() {
 					toAdd.push_back(classes[j]);
 				}
 			}
-			//if(selectedClasses[0] == selectedClasses[1]){		//added these checks to order classes by increasing number of sections
-				selectedClasses.push_back(toAdd);
-			/*}
-			else if(toAdd.size()>selectedClasses[0].size()){    //TODO: make this work for better efficiency
-				selectedClasses.push_back(toAdd);
-			}
-			else {
-				selectedClasses.insert(1, toAdd);
-			}*/
+			selectedClasses.push_back(toAdd);
 		}
 	}
 	
@@ -276,16 +269,23 @@ int main() {
 	
 	//All the possible schedules, including ones that have conflicts. 
 	//TODO: Filter out the conflicts
+	vector<vector<ClassEntry>> allSchedules;
 	vector<vector<ClassEntry>> possSchedules;
-	findSchedules(selectedClasses, possSchedules);
+	findSchedules(selectedClasses, allSchedules);
 	int count = 0;
-	for(int i = 0; i < possSchedules.size(); i++) {
-		cout << "Printing a schedule" << endl << endl;
-		for(int j = 0; j < possSchedules[i].size(); j++) {
+	cout << allSchedules[0][0].toString()<< endl;
+	for(int i = 0; i < allSchedules.size(); i++) {
+		if(checkSched(allSchedules[i])){
+			possSchedules.push_back(allSchedules[i]);
+			count++;
+		}
+	}
+	/*for(int i = 0; i < possSchedules.size(); i++) {
+		for(int j = 0; j<possSchedules[i].size(); j++){
 			cout << possSchedules[i][j].toString() << endl;
 		}
-		count++;
-	}
+		cout << endl;
+	}*/
 	cout << endl;
 	cout << "Num schedules generated: " << count << endl;
 	return 0;
