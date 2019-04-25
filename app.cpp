@@ -84,28 +84,34 @@ void cmdInput(vector<ClassEntry> classes){
 }
 
 bool hasSameDays(string Adays,string Bdays){ //checks if classes are offered on the same day
+	bool match = false;
 	for(int a = 0; Adays.substr(a,1) != ""; a++){ //fill daysA w/ the chars representing each day of class
 		if(Bdays.find(Adays.substr(a,1)) != -1){
-			cout << Adays.substr(a,1) << " " << Bdays.substr(a,1) << endl;
-			return true;
+//			cout << Adays.substr(a,1) << " " << Bdays.substr(a,1) << match << endl;
+			match = true;
+//			cout << "during function: " << match << endl;
+//			break;
 		}
 	}
-	return false;
+	//cout << match << endl;
+	return match;
 }
 
 bool isConflict(ClassEntry courseA, ClassEntry courseB){// ISSUE: ALWAYS RETURNING FALSE
 	
 	string Adays = courseA.days;
 	string Bdays = courseB.days;
-	
-	if(hasSameDays(Adays, Bdays)){//TODO: check if courses run on any of the same days
-		if(courseA.startTime < courseB.endTime && courseA.startTime > courseB.startTime){ //check if courseA starts during courseB
+//	cout << "After function: " << endl << hasSameDays(Adays, Bdays) << endl;
+	if(hasSameDays(Adays, Bdays)){// check if courses run on any of the same days
+		if(courseA.startTime <= courseB.endTime && courseA.startTime >= courseB.startTime){ //check if courseA starts during courseB
 			return true;
 		}
-		else if(courseA.endTime < courseB.endTime && courseA.endTime > courseB.startTime){ //check if courseA ends during courseB
+		else if(courseA.endTime <= courseB.endTime && courseA.endTime >= courseB.startTime){ //check if courseA ends during courseB
 			return true;
 		}
+//		cout<< "inside first if: " << courseA.startTime << endl;
 	}
+//	else{cout << "hasSameDays() returning false" << endl;}
 	return false;
 }
 
@@ -205,11 +211,14 @@ vector<ClassEntry> readData(string path) {
 
 bool checkSched(vector<ClassEntry> checkThis){//takes a combination of class sections, returns if it is valid
 	//TODO: use isConflict a lot to check if there are any conflicts TODO: TEST THIS
+	int cases = 0;
 	for(int a = 0; a<checkThis.size();a++){
 		for(int b = a+1; b<checkThis.size();b++){
+			cases++;
 			if(isConflict(checkThis[a], checkThis[b])){return false;}
 		}
 	}
+//	cout << endl << "checked " << cases << " cases" << endl;
 	return true;
 }
 
@@ -265,27 +274,38 @@ int main() {
 		}
 	}
 	
-	cout << endl << endl << endl;
-	
+	cout << endl << endl<< "What is your credit load limit? (input a number 12-25)" << endl;
+	float credLimit,credTot=0;
+	cin >> credLimit;
+	for(int i = 0; i<selectedClasses.size();i++){
+		credTot+=selectedClasses[i][0].numCredits;
+	}
+	if(credTot > credLimit){
+		cout<< "You've chosen too many classes for that credit load!" << endl; 
+		return 0;
+	}
+	cout << "total credits chosen: " << credTot << endl;
 	//All the possible schedules, including ones that have conflicts. 
 	//TODO: Filter out the conflicts
 	vector<vector<ClassEntry>> allSchedules;
 	vector<vector<ClassEntry>> possSchedules;
 	findSchedules(selectedClasses, allSchedules);
 	int count = 0;
-	cout << allSchedules[0][0].toString()<< endl;
+	//cout << allSchedules[0][0].toString()<< endl;
 	for(int i = 0; i < allSchedules.size(); i++) {
 		if(checkSched(allSchedules[i])){
 			possSchedules.push_back(allSchedules[i]);
 			count++;
 		}
 	}
-	/*for(int i = 0; i < possSchedules.size(); i++) {
+	cout << endl << endl << "Possible Schedules: " << endl;
+	for(int i = 0; i < possSchedules.size(); i++) {
 		for(int j = 0; j<possSchedules[i].size(); j++){
 			cout << possSchedules[i][j].toString() << endl;
+			
 		}
 		cout << endl;
-	}*/
+	}
 	cout << endl;
 	cout << "Num schedules generated: " << count << endl;
 	return 0;
