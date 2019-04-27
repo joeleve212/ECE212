@@ -248,6 +248,35 @@ void findSchedules(vector<vector<ClassEntry>> selectedClasses, vector<vector<Cla
 	findSchedulesHelper(selectedClasses, 0, emptyBuild, out);
 }
 
+string intToTime(int time) {
+	int hour = (int)(((float)time)/100);
+	int minute = time-(hour*100);
+	bool isPM = false;
+	if(hour == 24)
+		hour = 0;
+	if(hour >= 12)
+		isPM = true;
+	if(hour == 0)
+		hour = 12;
+	if(hour > 12)
+		hour = hour - 12;
+	return to_string(hour) + ":" + (minute < 10 ? "0" + to_string(minute) : to_string(minute)) + (isPM ? " PM" : " AM");
+}
+
+void writeSchedulesToFile(string path, vector<vector<ClassEntry>> schedules) {
+	ofstream outputFile;
+	outputFile.open(path);
+	outputFile << "Subject-Number,Course Title,StartTime,EndTime,Days" << endl;
+	for(int i = 0; i < schedules.size(); i++) {
+		for(int j = 0; j < schedules[i].size(); j++) {
+			ClassEntry entry = schedules[i][j];
+			outputFile << entry.subjectNumber + "," + entry.title + "," + intToTime(entry.startTime) + "," + intToTime(entry.endTime) + "," + entry.days << endl;
+		}
+		outputFile << endl << endl;
+	}
+	outputFile.close();
+}
+
 int main() {
 	
 	//All the classes, including the same class at different times.
@@ -259,19 +288,34 @@ int main() {
 	//A 2D vector holding all the classes, including all the sections, that the user selected in class_Select.csv
 	//The first dimension (selectedClasses[x]) holds all posibilities of a single class (I.E. all ECE-211 sections)
 	//The second dimension (selectedClasses[x][y]) holds a single possibility for that class (I.E. ECE-211 @3:00PM)
-	vector<vector<ClassEntry>> selectedClasses;
-	//Populate the selectedClasses vector
+	vector<vector<ClassEntry>> requiredSelectedClasses;
+	vector<vector<ClassEntry>> nonRequiredSelectedClasses;
+	//Populate the selectedClasses vectors
 	for(int i = 0; i < selectedColumn.size(); i++) {
 		//If a class that is selected by the user is found, add in all copies of it.
-		if(selectedColumn[i] == "x" || selectedColumn[i] == "X") {
+		if(selectedColumn[i] == "r" || selectedColumn[i] == "R") {
 			vector<ClassEntry> toAdd;
 			for(int j = 0;  j < classes.size(); j++) {
 				if(classes[j].subjectNumber == allSubjectNumbers[i]){
 					toAdd.push_back(classes[j]);
 				}
 			}
-			selectedClasses.push_back(toAdd);
+			requiredSelectedClasses.push_back(toAdd);
 		}
+		else if(selectedColumn[i] == "n" || selectedColumn[i] == "N") {
+			vector<ClassEntry> toAdd;
+			for(int j = 0;  j < classes.size(); j++) {
+				if(classes[j].subjectNumber == allSubjectNumbers[i]){
+					toAdd.push_back(classes[j]);
+				}
+			}
+			nonRequiredSelectedClasses.push_back(toAdd);
+		}
+	}
+	//Contains all the classes
+	vector<vector<ClassEntry>> selectedClasses(requiredSelectedClasses);
+	for(int i = 0; i < nonRequiredSelectedClasses.size(); i++) {
+		selectedClasses.push_back(nonRequiredSelectedClasses[i]);
 	}
 	
 	cout << endl << endl<< "What is your credit load limit? (input a number 12-25)" << endl;
@@ -290,24 +334,48 @@ int main() {
 	vector<vector<ClassEntry>> allSchedules;
 	vector<vector<ClassEntry>> possSchedules;
 	findSchedules(selectedClasses, allSchedules);
+	
 	int count = 0;
+	int count1 = 0;
 	//cout << allSchedules[0][0].toString()<< endl;
 	for(int i = 0; i < allSchedules.size(); i++) {
 		if(checkSched(allSchedules[i])){
 			possSchedules.push_back(allSchedules[i]);
 			count++;
 		}
+		count1++;
 	}
-	cout << endl << endl << "Possible Schedules: " << endl;
-	for(int i = 0; i < possSchedules.size(); i++) {
-		for(int j = 0; j<possSchedules[i].size(); j++){
-			cout << possSchedules[i][j].toString() << endl;
-			
+	//A bool to determine if only required classes works or both required and nonrequired works.
+	bool allSchedulesWork = true;
+	if(count == 0) {
+		findSchedules(requiredSelectedClasses, allSchedules);
+		for(int i = 0; i < allSchedules.size(); i++) {
+			if(checkSched(allSchedules[i])){
+				possSchedules.push_back(allSchedules[i]);
+				count++;
+			}
 		}
-		cout << endl;
+		if(possSchedules.empty()) {
+			cout << "No such schedule works with the currently selected required classes" << endl;
+			return 0;
+		}
+		allSchedulesWork = false;
 	}
+	
 	cout << endl;
-	cout << "Num schedules generated: " << count << endl;
+	cout << "Total num schedules generated: " << count1 << endl;
+	cout << "Num valid schedules generated: " << count << endl << endl;
+	cout << (allSchedulesWork ? "All selected classes fit into the schedule" : "Only required classes fit into the schedule") << endl;
+	string writeToFile;
+	while(!(writeToFile == "Y" || writeToFile == "N" || writeToFile == "y" || writeToFile == "n")) {
+		cout << "Write these schedules to the output file? (y/n)" << endl;
+		cin >> writeToFile;
+	}
+	
+	if(writeToFile == "y" || writeToFile == "Y") {
+		writeSchedulesToFile("output.csv", possSchedules);
+	}
+		
 	return 0;
 }
 
